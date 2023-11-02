@@ -17,37 +17,55 @@ function playRound(playerSelection, computerSelection) {
     case "rock":
       switch (computerSelection) {
         case "rock":
-          return "Tie!";
+          return { winner: 0, explanation: "Everyone chose Rock!" };
         case "paper":
-          return "You lose! Paper beats Rock!";
+          return { winner: 2, explanation: "Paper beats Rock!" };
         case "scissors":
-          return "You win! Rock beats Scissors!";
+          return { winner: 1, explanation: "Rock beats Scissors!" };
       }
     case "paper":
       switch (computerSelection) {
         case "rock":
-          return "You win! Paper beats Rock!";
+          return { winner: 1, explanation: "Paper beats Rock!" };
         case "paper":
-          return "Tie!";
+          return { winner: 0, explanation: "Everyone chose Paper!" };
         case "scissors":
-          return "You lose! Scissors beat Paper!";
+          return { winner: 2, explanation: "Scissors beat Paper!" };
       }
     case "scissors":
       switch (computerSelection) {
         case "rock":
-          return "You lose! Rock beats Scissors!";
+          return { winner: 2, explanation: "rock", looserChoice: "scissors" };
         case "paper":
-          return "You win! Scissors beats Paper!";
+          return { winner: 1, explanation: "Scissors beat Paper!" };
         case "scissors":
-          return "Tie!";
+          return { winner: 0, explanation: "Everyone chose Scissors!" };
       }
   }
 }
 
-function game() {
-  for (let i = 0; i < 5; ++i) {
-    console.log(playRound(prompt("Rock, Paper or Scissors?"), getComputerChoice()));
+const buttonContainer = document.querySelector(".button-container");
+const resultsContainer = document.querySelector(".results");
+const finalResult = document.createElement("p");
+
+let computerScore = 0;
+let playerScore = 0;
+
+function game(e) {
+  let roundResults = playRound(e.target.className, getComputerChoice());
+  let resultsParagraph = document.createElement("p");
+  resultsParagraph.textContent =
+    (roundResults.winner == 0
+      ? "Tie! "
+      : roundResults.winner == 1
+      ? (++playerScore, "You won the round! ")
+      : (++computerScore, "You lost the round! ")) + roundResults.explanation;
+  resultsContainer.append(resultsParagraph);
+  if (computerScore == 5 || playerScore == 5) {
+    finalResult.textContent = computerScore > playerScore ? "THE COMPUTER WON." : "YOU WON!";
+    resultsContainer.append(finalResult);
+    buttonContainer.removeEventListener("click", game);
   }
 }
 
-game();
+buttonContainer.addEventListener("click", game);
